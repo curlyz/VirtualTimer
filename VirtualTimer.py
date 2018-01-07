@@ -21,7 +21,7 @@ def beginVirtualTimer(resolution,timer = -1 ):
 	except NameError:
 		pass
 	global _timer 
-	_virtualTimer = Timer(-1).init(period=resolution, mode=Timer.PERIODIC, callback=_virtualTimerHandler)
+	_virtualTimer = Timer(timer).init(period=resolution, mode=Timer.PERIODIC, callback=_virtualTimerHandler)
 
 def _virtualTimerHandler(a):
 	if _isChanging == True : #avoid accidentally while in deleteTimer and this interrupt is call which may lead to list error
