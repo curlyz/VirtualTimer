@@ -13,6 +13,7 @@
 from utime import ticks_diff , ticks_ms 
 from machine import Timer 
 
+_isChanging = False 
 _virtualTimerStack = [] # nextTimeInt , mode , timerName , period , callback
 def beginVirtualTimer(resolution,timer = -1 ):
 	try:
@@ -23,6 +24,8 @@ def beginVirtualTimer(resolution,timer = -1 ):
 	_virtualTimer = Timer(-1).init(period=resolution, mode=Timer.PERIODIC, callback=_virtualTimerHandler)
 
 def _virtualTimerHandler(a):
+	if _isChanging == True : #avoid accidentally while in deleteTimer and this interrupt is call which may lead to list error
+		return 
 	global _virtualTimerStack
 	nowTime = ticks_ms()
 	for i in range(len(_virtualTimerStack)):
@@ -35,7 +38,7 @@ def _virtualTimerHandler(a):
 				_virtualTimerStack.pop(i) #remove the timer 
 	_virtualTimerStack.sort()
 def addTimer ( timerName , period , mode , callback):
-	print([ticks_ms()+period,mode,timerName,period,callback])
+	_isChanging = True
 	global _virtualTimerStack
 	if len(_virtualTimerStack) == 0:
 		_virtualTimerStack.append([ticks_ms()+period,mode,timerName,period,callback])
@@ -49,9 +52,12 @@ def addTimer ( timerName , period , mode , callback):
 				_virtualTimerStack.append([ticks_ms()+period,mode,timerName,period,callback])
 			break
 	_virtualTimerStack.sort()
+	_isChanging = False 
 def deleteTimer( timerName ):
+	_isChanging = True 
 	for i in range(len(_virtualTimerStack)):
 		if _virtualTimerStack[i][2] == timerName:
 			_virtualTimerStack.pop(i)
 			break
+	_isChanging = False 
 		
