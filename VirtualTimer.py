@@ -38,6 +38,7 @@ def _virtualTimerHandler(a):
 				_virtualTimerStack.pop(i) #remove the timer 
 	_virtualTimerStack.sort()
 def addTimer ( timerName , period , mode , callback):
+	global _isChanging
 	_isChanging = True
 	global _virtualTimerStack
 	if len(_virtualTimerStack) == 0:
@@ -54,6 +55,7 @@ def addTimer ( timerName , period , mode , callback):
 	_virtualTimerStack.sort()
 	_isChanging = False 
 def deleteTimer( timerName ):
+	global _isChanging
 	_isChanging = True 
 	for i in range(len(_virtualTimerStack)):
 		if _virtualTimerStack[i][2] == timerName:
